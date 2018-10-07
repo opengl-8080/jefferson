@@ -1,8 +1,59 @@
 apply plugin: "application"
 
-sourceCompatibility = 10
-targetCompatibility = 10
+sourceCompatibility = 11
+targetCompatibility = 11
 
 compileJava.options.encoding = "UTF-8"
 
-mainClassName = "jefferson.Main"
+mainClassName = "jefferson/jefferson.Main"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.openjfx:javafx-base:11:win"
+    compile "org.openjfx:javafx-graphics:11:win"
+    compile "org.openjfx:javafx-controls:11:win"
+    compile "org.openjfx:javafx-fxml:11:win"
+    compile "org.openjfx:javafx-media:11:win"
+}
+
+compileJava {
+    doFirst {
+        options.compilerArgs = [
+            "--module-path", classpath.asPath
+        ]
+        classpath = files()
+    }
+}
+
+run {
+    doFirst {
+        jvmArgs = [
+            "--module-path", classpath.asPath,
+            "--module", mainClassName
+        ]
+        classpath = files()
+    }
+}
+
+import java.util.regex.Matcher
+startScripts {
+    doFirst {
+        classpath = files()
+        defaultJvmOpts = [
+            "--module-path", "APP_HOME_LIBS",
+            "--module", mainClassName
+        ]
+    }
+    doLast {
+        File bashFile = new File(outputDir, applicationName)
+        String bashContent = bashFile.text
+        bashFile.text = bashContent.replaceFirst("APP_HOME_LIBS", Matcher.quoteReplacement('$APP_HOME/lib'))
+
+        File batFile = new File(outputDir, applicationName + ".bat")
+        String batContent = batFile.text
+        batFile.text = batContent.replaceFirst("APP_HOME_LIBS", Matcher.quoteReplacement('%APP_HOME%/lib'))
+    }
+}
