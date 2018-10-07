@@ -1,0 +1,6 @@
+/src/main/resources/media/
+/build/
+/out/
+/.gradle/
+/.idea/
+*.iml
