@@ -3,10 +3,12 @@ package jefferson;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -35,6 +37,9 @@ public class MenuController implements Initializable {
 
                     Scene scene = new Scene(parent);
                     Stage stage = new Stage();
+                    Rectangle2D bounds = Screen.getPrimary().getBounds();
+                    stage.setWidth(bounds.getWidth() * 0.8);
+                    stage.setHeight(bounds.getHeight() * 0.8);
                     stage.setScene(scene);
                     stage.setTitle(title);
                     stage.show();
