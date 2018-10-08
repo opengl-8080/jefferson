@@ -3,12 +3,11 @@ package jefferson;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.input.TouchEvent;
+import javafx.scene.input.TouchPoint;
+import javafx.scene.layout.Pane;
 import javafx.scene.media.MediaView;
 
 import java.net.URL;
@@ -18,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 public class PlayerController implements Initializable {
     @FXML
-    private Region contentArea;
+    private Pane contentArea;
     @FXML
     private MediaView mediaView;
     @FXML
@@ -26,6 +25,11 @@ public class PlayerController implements Initializable {
     
     private Title title;
     private CyclicIndex index;
+    private boolean mouseMode;
+
+    public void setMouseMode(boolean mouseMode) {
+        this.mouseMode = mouseMode;
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -46,8 +50,7 @@ public class PlayerController implements Initializable {
                         if (scrollDelta != 0) {
                             long time = System.currentTimeMillis() - lastScrollTime;
                             if (200 < time) {
-                                index.add(scrollDelta);
-                                play();
+                                this.movePage(scrollDelta);
                                 scrollDelta = 0;
                             }
                         }
@@ -57,9 +60,18 @@ public class PlayerController implements Initializable {
     
     private long lastScrollTime;
     private int scrollDelta;
+
+    private void movePage(int delta) {
+        this.index.add(delta);
+        this.play();
+    }
     
     @FXML
     public void onScroll(ScrollEvent e) {
+        if (!this.mouseMode) {
+            return;
+        }
+
         if (e.getDeltaY() < 0) {
             scrollDelta--;
         } else {
@@ -67,7 +79,57 @@ public class PlayerController implements Initializable {
         }
         lastScrollTime = System.currentTimeMillis();
     }
-    
+
+    private boolean touching;
+    private TouchPoint start;
+    private static final double SWIPE_MOVE_THRESHOLD = 150.0;
+
+    @FXML
+    public void onTouchPressed(TouchEvent e) {
+        if (this.mouseMode) {
+            return;
+        }
+
+        this.touching = true;
+        this.start = e.getTouchPoint();
+    }
+    @FXML
+    public void onTouchMoved(TouchEvent e) {
+        if (this.mouseMode) {
+            return;
+        }
+
+        if (this.touching) {
+            TouchPoint end = e.getTouchPoint();
+            double delta = end.getScreenX() - start.getScreenX();
+            double deltaAbs = Math.abs(delta);
+            if (deltaAbs < SWIPE_MOVE_THRESHOLD) {
+                this.contentArea.setOpacity(1 - 0.5 * (deltaAbs/ SWIPE_MOVE_THRESHOLD));
+                this.contentArea.setTranslateX(delta);
+            }
+        }
+    }
+
+    @FXML
+    public void onTouchReleased(TouchEvent e) {
+        if (this.mouseMode) {
+            return;
+        }
+
+        double delta = e.getTouchPoint().getScreenX() - this.start.getScreenX();
+        if (SWIPE_MOVE_THRESHOLD <= Math.abs(delta)) {
+            if (delta < 0) {
+                this.movePage(1);
+            } else if (0 < delta) {
+                this.movePage(-1);
+            }
+        }
+
+        this.touching = false;
+        this.contentArea.setOpacity(1.0);
+        this.contentArea.setTranslateX(0.0);
+    }
+
     
     public void show(String id) {
         this.title = new Title(id);
