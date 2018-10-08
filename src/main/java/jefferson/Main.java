@@ -17,7 +17,11 @@ public class Main extends Application {
     public static void main(String[] args) {
         Application.launch(Main.class, args);
     }
-    
+
+    public static void removeStage(Stage stage) {
+        stages.remove(stage);
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         URL url = Main.class.getResource("/fxml/menu.fxml");

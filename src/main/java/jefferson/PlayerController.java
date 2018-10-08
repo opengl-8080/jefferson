@@ -3,12 +3,15 @@ package jefferson;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.TouchEvent;
 import javafx.scene.input.TouchPoint;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.MediaView;
+import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -17,15 +20,24 @@ import java.util.concurrent.TimeUnit;
 
 public class PlayerController implements Initializable {
     @FXML
+    private Pane root;
+    @FXML
     private Pane contentArea;
     @FXML
     private MediaView mediaView;
     @FXML
     private ImageView imageView;
-    
+
+    private Stage stage;
+    private ContextMenu contextMenu = new ContextMenu();
     private Title title;
     private CyclicIndex index;
     private boolean mouseMode;
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+        this.stage.setFullScreenExitHint("");
+    }
 
     public void setMouseMode(boolean mouseMode) {
         this.mouseMode = mouseMode;
@@ -38,6 +50,18 @@ public class PlayerController implements Initializable {
         this.imageView.fitWidthProperty().bind(this.contentArea.widthProperty());
         this.imageView.fitHeightProperty().bind(this.contentArea.heightProperty());
         this.mediaView.setPreserveRatio(true);
+
+        this.root.setOnContextMenuRequested(e -> {
+            this.contextMenu.hide();
+            this.contextMenu.show(stage, e.getScreenX(), e.getScreenY());
+        });
+
+        MenuItem menuItem = new MenuItem("全画面");
+        menuItem.setOnAction(e -> {
+            boolean fullScreen = this.stage.isFullScreen();
+            this.stage.setFullScreen(!fullScreen);
+        });
+        this.contextMenu.getItems().add(menuItem);
 
         // 短時間に何度もスクロールしたときに、インデックスと効率的に飛ばすための処置
         Executors.newSingleThreadScheduledExecutor(r -> {
@@ -56,6 +80,8 @@ public class PlayerController implements Initializable {
                         }
                     });
                 }, 0, 300, TimeUnit.MILLISECONDS);
+
+        ContextMenu contextMenu = new ContextMenu();
     }
     
     private long lastScrollTime;

@@ -43,9 +43,13 @@ public class MenuController implements Initializable {
                     stage.setScene(scene);
                     stage.setTitle(title);
                     stage.show();
+                    stage.setOnCloseRequest(ee -> {
+                        Main.removeStage(stage);
+                    });
                     Main.addStage(stage);
 
                     PlayerController controller = loader.getController();
+                    controller.setStage(stage);
                     controller.show(id);
                 } catch (IOException e1) {
                     throw new UncheckedIOException(e1);

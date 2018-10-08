@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.media.MediaView?>
 
-<BorderPane onScroll="#onScroll" onTouchMoved="#onTouchMoved" onTouchPressed="#onTouchPressed" onTouchReleased="#onTouchReleased" prefHeight="900.0" prefWidth="1000.0" style="-fx-padding: 10px;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jefferson.PlayerController">
+<BorderPane fx:id="root" onScroll="#onScroll" onTouchMoved="#onTouchMoved" onTouchPressed="#onTouchPressed" onTouchReleased="#onTouchReleased" prefHeight="900.0" prefWidth="1000.0" style="-fx-padding: 10px;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="jefferson.PlayerController">
    <center>
       <HBox fx:id="contentArea" alignment="CENTER" minHeight="0.0" minWidth="0.0">
          <children>
