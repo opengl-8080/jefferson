@@ -39,12 +39,12 @@ public class PlayerController implements Initializable {
         this.stage.setFullScreenExitHint("");
     }
 
-    public void setMouseMode(boolean mouseMode) {
-        this.mouseMode = mouseMode;
-    }
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        if (System.getProperty("mouseMode") != null) {
+            this.mouseMode = true;
+        }
+
         this.mediaView.fitWidthProperty().bind(this.contentArea.widthProperty());
         this.mediaView.fitHeightProperty().bind(this.contentArea.heightProperty());
         this.imageView.fitWidthProperty().bind(this.contentArea.widthProperty());
