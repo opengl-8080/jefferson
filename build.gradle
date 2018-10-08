@@ -1,4 +1,5 @@
 apply plugin: "application"
+apply plugin: "idea"
 
 sourceCompatibility = 11
 targetCompatibility = 11
@@ -17,6 +18,14 @@ dependencies {
     compile "org.openjfx:javafx-controls:11:win"
     compile "org.openjfx:javafx-fxml:11:win"
     compile "org.openjfx:javafx-media:11:win"
+}
+
+idea.module.outputDir file("out/production/classes")
+
+sourceSets {
+    main {
+        output.resourcesDir = java.outputDir
+    }
 }
 
 compileJava {
