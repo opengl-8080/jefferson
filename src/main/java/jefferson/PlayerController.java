@@ -1,10 +1,13 @@
 package jefferson;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Orientation;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.input.TouchEvent;
@@ -27,6 +30,8 @@ public class PlayerController implements Initializable {
     private MediaView mediaView;
     @FXML
     private ImageView imageView;
+    @FXML
+    private Slider slider;
 
     private Stage stage;
     private ContextMenu contextMenu = new ContextMenu();
@@ -81,7 +86,24 @@ public class PlayerController implements Initializable {
                     });
                 }, 0, 300, TimeUnit.MILLISECONDS);
 
-        ContextMenu contextMenu = new ContextMenu();
+        this.slider.valueProperty().addListener((o, old, value) -> {
+            if (!this.slider.isValueChanging()) {
+                int page = this.title.size() - value.intValue();
+                this.changePage(page);
+            }
+        });
+        
+        this.slider.valueChangingProperty().addListener((o, old, changing) -> {
+            if (!changing) {
+                int page = this.title.size() - (int) this.slider.getValue();
+                this.changePage(page);
+            }
+        });
+    }
+    
+    private void changePage(int page) {
+        this.index.set(page);
+        this.play();
     }
     
     private long lastScrollTime;
@@ -160,6 +182,11 @@ public class PlayerController implements Initializable {
     public void show(String id) {
         this.title = new Title(id);
         this.index = new CyclicIndex(this.title.size());
+
+//        this.slider.valueProperty().bind(this.index.indexProperty());
+        this.slider.setMin(1);
+        this.slider.setMax(this.title.size());
+        this.slider.setValue(this.slider.getMax());
         
         this.play();
     }
