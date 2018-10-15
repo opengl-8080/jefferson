@@ -183,7 +183,6 @@ public class PlayerController implements Initializable {
         this.title = new Title(id);
         this.index = new CyclicIndex(this.title.size());
 
-//        this.slider.valueProperty().bind(this.index.indexProperty());
         this.slider.setMin(1);
         this.slider.setMax(this.title.size());
         this.slider.setValue(this.slider.getMax());
