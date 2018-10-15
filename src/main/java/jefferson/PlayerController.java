@@ -1,6 +1,7 @@
 package jefferson;
 
 import javafx.application.Platform;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -86,19 +87,25 @@ public class PlayerController implements Initializable {
                     });
                 }, 0, 300, TimeUnit.MILLISECONDS);
 
+        // 上下キーやスライダー上をクリックして変更したときの処理
         this.slider.valueProperty().addListener((o, old, value) -> {
             if (!this.slider.isValueChanging()) {
-                int page = this.title.size() - value.intValue();
+                int page = this.indexToSliderValue(value.intValue());
                 this.changePage(page);
             }
         });
         
+        // スライダがドラッグされているときの処理
         this.slider.valueChangingProperty().addListener((o, old, changing) -> {
             if (!changing) {
-                int page = this.title.size() - (int) this.slider.getValue();
+                int page = this.indexToSliderValue((int)this.slider.getValue());
                 this.changePage(page);
             }
         });
+    }
+    
+    private int indexToSliderValue(int index) {
+        return this.title.size() - index - 1;
     }
     
     private void changePage(int page) {
@@ -183,9 +190,15 @@ public class PlayerController implements Initializable {
         this.title = new Title(id);
         this.index = new CyclicIndex(this.title.size());
 
-        this.slider.setMin(1);
-        this.slider.setMax(this.title.size());
-        this.slider.setValue(this.slider.getMax());
+        // マウススクロールでインデックスが変更されたときの処理
+        this.index.indexProperty().addListener((o, old, index) -> {
+            if (!this.slider.isValueChanging()) {
+                this.slider.setValue(this.indexToSliderValue(index.intValue()));
+            }
+        });
+        this.slider.setMin(0);
+        this.slider.setMax(this.title.size() - 1);
+        this.slider.setValue(this.indexToSliderValue(0));
         
         this.play();
     }
